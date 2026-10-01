@@ -1,0 +1,363 @@
+// GraphQL schema of the relay-workshop server (apps/server/schema/schema.graphql)
+export const schemaSDL = /* GraphQL */ `
+"""Comment data"""
+type Comment implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """mongoose _id"""
+  _id: String!
+  body: String
+  user: User
+  post: Post
+  likesCount: Int!
+
+  """whether logged user liked this post"""
+  meHasLiked: Boolean!
+  createdAt: String
+  updatedAt: String
+}
+
+"""A connection to a list of items."""
+type CommentConnection implements Connection {
+  """Number of items in this connection."""
+  count: Int
+
+  """
+  A count of the total number of objects in this connection, ignoring pagination.
+  This allows a client to fetch the first five objects by passing "5" as the
+  argument to "first", then fetch the total count so it could display "5 of 83",
+  for example.
+  """
+  totalCount: Int
+
+  """Offset from start."""
+  startCursorOffset: Int!
+
+  """Offset till end."""
+  endCursorOffset: Int!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [CommentEdge]!
+}
+
+"""An edge in a connection."""
+type CommentEdge {
+  """The item at the end of the edge."""
+  node: Comment
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+input CommentLikeInput {
+  comment: ID!
+  clientMutationId: String
+}
+
+type CommentLikePayload {
+  comment: Comment
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+input CommentUnLikeInput {
+  comment: ID!
+  clientMutationId: String
+}
+
+type CommentUnLikePayload {
+  comment: Comment
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+"""A connection to a list of items."""
+interface Connection {
+  """Number of items in this connection."""
+  count: Int
+
+  """
+  A count of the total number of objects in this connection, ignoring pagination.
+  This allows a client to fetch the first five objects by passing "5" as the
+  argument to "first", then fetch the total count so it could display "5 of 83",
+  for example.
+  """
+  totalCount: Int
+
+  """Offset from start."""
+  startCursorOffset: Int!
+
+  """Offset till end."""
+  endCursorOffset: Int!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type Mutation {
+  UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
+  UserRegisterWithEmail(input: UserRegisterWithEmailInput!): UserRegisterWithEmailPayload
+  PostCreate(input: PostCreateInput!): PostCreatePayload
+  PostDelete(input: PostDeleteInput!): PostDeletePayload
+  PostLike(input: PostLikeInput!): PostLikePayload
+  PostUnLike(input: PostUnLikeInput!): PostUnLikePayload
+  CommentLike(input: CommentLikeInput!): CommentLikePayload
+  CommentUnLike(input: CommentUnLikeInput!): CommentUnLikePayload
+  PostCommentCreate(input: PostCommentCreateInput!): PostCommentCreatePayload
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""Post data"""
+type Post implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """mongoose _id"""
+  _id: String!
+  content: String
+  author: User
+  likesCount: Int!
+  commentsCount: Int!
+  comments(after: String, first: Int, before: String, last: Int): CommentConnection!
+
+  """whether logged user liked this post"""
+  meHasLiked: Boolean!
+  createdAt: String
+  updatedAt: String
+}
+
+input PostCommentCreateInput {
+  post: ID!
+  body: String!
+  clientMutationId: String
+}
+
+type PostCommentCreatePayload {
+  commentEdge: CommentEdge
+  post: Post
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+"""A connection to a list of items."""
+type PostConnection implements Connection {
+  """Number of items in this connection."""
+  count: Int
+
+  """
+  A count of the total number of objects in this connection, ignoring pagination.
+  This allows a client to fetch the first five objects by passing "5" as the
+  argument to "first", then fetch the total count so it could display "5 of 83",
+  for example.
+  """
+  totalCount: Int
+
+  """Offset from start."""
+  startCursorOffset: Int!
+
+  """Offset till end."""
+  endCursorOffset: Int!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [PostEdge]!
+}
+
+input PostCreateInput {
+  content: String!
+  clientMutationId: String
+}
+
+type PostCreatePayload {
+  postEdge: PostEdge
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+input PostDeleteInput {
+  postId: ID!
+  clientMutationId: String
+}
+
+type PostDeletePayload {
+  postId: ID
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+"""An edge in a connection."""
+type PostEdge {
+  """The item at the end of the edge."""
+  node: Post
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+input PostLikeInput {
+  post: ID!
+  clientMutationId: String
+}
+
+type PostLikePayload {
+  post: Post
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+input PostNewInput {
+  clientSubscriptionId: String
+}
+
+type PostNewPayload {
+  post: Post
+  clientSubscriptionId: String
+}
+
+input PostUnLikeInput {
+  post: ID!
+  clientMutationId: String
+}
+
+type PostUnLikePayload {
+  post: Post
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+"""The root of all... queries"""
+type Query {
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]!
+  me: User
+  posts(after: String, first: Int, before: String, last: Int): PostConnection!
+  version: String!
+}
+
+type Subscription {
+  PostNew(input: PostNewInput!): PostNewPayload
+}
+
+"""User data"""
+type User implements Node {
+  """The ID of an object"""
+  id: ID!
+
+  """mongoose _id"""
+  _id: String!
+  name: String
+  email: String
+  posts(after: String, first: Int, before: String, last: Int): PostConnection!
+  comments(after: String, first: Int, before: String, last: Int): CommentConnection!
+  createdAt: String
+  updatedAt: String
+}
+
+input UserLoginWithEmailInput {
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type UserLoginWithEmailPayload {
+  token: String
+  me: User
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+input UserRegisterWithEmailInput {
+  name: String!
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type UserRegisterWithEmailPayload {
+  token: String
+  me: User
+
+  """Default error field resolver."""
+  error: String
+
+  """Default success field resolver."""
+  success: String
+  clientMutationId: String
+}
+
+`;
